@@ -120,7 +120,9 @@
     <div class="add-box">
         <input id="taskInput" type="text"
                placeholder="Example: Complete Current Electricity lecture">
-
+<label for="dateInput">Deadline /
+    Test Date:</label>
+<input id="dateInput" type="date">
         <select id="subjectInput">
             <option>Physics</option>
             <option>Chemistry</option>
@@ -209,21 +211,24 @@
             let taskInput = document.getElementById("taskInput");
             let subject = document.getElementById("subjectInput").value;
             let type = document.getElementById("typeInput").value;
+            let date = document.getElementById("dateInput").value;
 
             if (taskInput.value === "") {
                 alert("Please write something first.");
                 return;
             }
-
-            tasks.push({
-                name: taskInput.value,
-                subject: subject,
-                type: type,
-                completed: false
-            });
+tasks.push({
+    name: taskInput.value,
+    subject: subject,
+    type: type,
+    date: date,
+    completed: false
+});
+           
 
             taskInput.value = "";
-            saveTasks();
+document.getElementById("dateInput").value = "";
+saveTasks();
             showTasks();
         }
 
@@ -246,7 +251,8 @@
                     "<input type='checkbox' " +
                     (task.completed ? "checked" : "") +
                     " onchange='completeTask(" + i + ")'> " +
-                    task.name +
+                   task.name +
+(task.date ? "<br><small>📅 Date: " + task.date + "</small>" : "") +
                     "<button class='delete-button' onclick='deleteTask(" + i + ")'>×</button>";
 
                 list.appendChild(item);
