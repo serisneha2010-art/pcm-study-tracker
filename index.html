@@ -111,6 +111,28 @@
                 flex-direction: column;
             }
         }
+        .progress-box {
+    max-width: 700px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.progress-background {
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 22px;
+    background: #22c55e;
+    transition: width 0.3s;
+}
     </style>
 </head>
 
@@ -140,6 +162,15 @@
         <br>
         <button onclick="addTask()">Add to Tracker</button>
     </div>
+    <div class="progress-box">
+    <h2>My Progress</h2>
+
+    <div class="progress-background">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <p id="progressText">0 of 0 tasks completed</p>
+</div>
 
     <div class="subjects">
         <div class="subject-column physics">
@@ -231,6 +262,21 @@ document.getElementById("dateInput").value = "";
 saveTasks();
             showTasks();
         }
+        function updateProgress() {
+    let completedTasks = tasks.filter(function(task) {
+        return task.completed;
+    }).length;
+
+    let percentage = 0;
+
+    if (tasks.length > 0) {
+        percentage = (completedTasks / tasks.length) * 100;
+    }
+
+    document.getElementById("progressBar").style.width = percentage + "%";
+    document.getElementById("progressText").textContent =
+        completedTasks + " of " + tasks.length + " tasks completed";
+}
 
         function showTasks() {
             document.querySelectorAll("ul").forEach(function(list) {
@@ -257,7 +303,7 @@ saveTasks();
 
                 list.appendChild(item);
             }
-        }
+       updateProgress(); }
 
         function completeTask(index) {
             tasks[index].completed = !tasks[index].completed;
