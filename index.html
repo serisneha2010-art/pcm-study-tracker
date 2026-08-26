@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PCM Study Tracker</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+        }
+
+        .add-box {
+            max-width: 700px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 15px;
+            border-radius: 7px;
+            border: 1px solid #cbd5e1;
+        }
+
+        input {
+            width: 96%;
+        }
+
+        select {
+            width: 48%;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .subjects {
+            display: flex;
+            gap: 18px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .subject-column {
+            flex: 1;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            min-width: 0;
+        }
+
+        .physics h2 { color: #dc2626; }
+        .chemistry h2 { color: #16a34a; }
+        .maths h2 { color: #7c3aed; }
+
+        h2 {
+            text-align: center;
+        }
+
+        h3 {
+            background: #e0e7ff;
+            padding: 8px;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        ul {
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+            background: #f8fafc;
+            padding: 9px;
+            margin: 7px 0;
+            border-left: 4px solid #2563eb;
+            border-radius: 5px;
+        }
+
+        .done {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .delete-button {
+            background: #dc2626;
+            float: right;
+            padding: 5px 8px;
+            margin: 0;
+        }
+
+        @media (max-width: 800px) {
+            .subjects {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📚 My PCM Study Tracker</h1>
+
+    <div class="add-box">
+        <input id="taskInput" type="text"
+               placeholder="Example: Complete Current Electricity lecture">
+
+        <select id="subjectInput">
+            <option>Physics</option>
+            <option>Chemistry</option>
+            <option>Maths</option>
+        </select>
+
+        <select id="typeInput">
+            <option>Backlog</option>
+            <option>Lecture</option>
+            <option>To-do List</option>
+            <option>Test</option>
+        </select>
+
+        <br>
+        <button onclick="addTask()">Add to Tracker</button>
+    </div>
+
+    <div class="subjects">
+        <div class="subject-column physics">
+            <h2>⚛️ Physics</h2>
+
+            <h3>Backlogs</h3>
+            <ul id="Physics-Backlog"></ul>
+
+            <h3>Lectures</h3>
+            <ul id="Physics-Lecture"></ul>
+
+            <h3>To-do List</h3>
+            <ul id="Physics-To-do List"></ul>
+
+            <h3>Tests</h3>
+            <ul id="Physics-Test"></ul>
+        </div>
+
+        <div class="subject-column chemistry">
+            <h2>🧪 Chemistry</h2>
+
+            <h3>Backlogs</h3>
+            <ul id="Chemistry-Backlog"></ul>
+
+            <h3>Lectures</h3>
+            <ul id="Chemistry-Lecture"></ul>
+
+            <h3>To-do List</h3>
+            <ul id="Chemistry-To-do List"></ul>
+
+            <h3>Tests</h3>
+            <ul id="Chemistry-Test"></ul>
+        </div>
+
+        <div class="subject-column maths">
+            <h2>📐 Maths</h2>
+
+            <h3>Backlogs</h3>
+            <ul id="Maths-Backlog"></ul>
+
+            <h3>Lectures</h3>
+            <ul id="Maths-Lecture"></ul>
+
+            <h3>To-do List</h3>
+            <ul id="Maths-To-do List"></ul>
+
+            <h3>Tests</h3>
+            <ul id="Maths-Test"></ul>
+        </div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem("pcmTasks")) || [];
+
+        function saveTasks() {
+            localStorage.setItem("pcmTasks", JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            let taskInput = document.getElementById("taskInput");
+            let subject = document.getElementById("subjectInput").value;
+            let type = document.getElementById("typeInput").value;
+
+            if (taskInput.value === "") {
+                alert("Please write something first.");
+                return;
+            }
+
+            tasks.push({
+                name: taskInput.value,
+                subject: subject,
+                type: type,
+                completed: false
+            });
+
+            taskInput.value = "";
+            saveTasks();
+            showTasks();
+        }
+
+        function showTasks() {
+            document.querySelectorAll("ul").forEach(function(list) {
+                list.innerHTML = "";
+            });
+
+            for (let i = 0; i < tasks.length; i++) {
+                let task = tasks[i];
+                let list = document.getElementById(task.subject + "-" + task.type);
+
+                let item = document.createElement("li");
+
+                if (task.completed) {
+                    item.classList.add("done");
+                }
+
+                item.innerHTML =
+                    "<input type='checkbox' " +
+                    (task.completed ? "checked" : "") +
+                    " onchange='completeTask(" + i + ")'> " +
+                    task.name +
+                    "<button class='delete-button' onclick='deleteTask(" + i + ")'>×</button>";
+
+                list.appendChild(item);
+            }
+        }
+
+        function completeTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+            showTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveTasks();
+            showTasks();
+        }
+
+        showTasks();
+    </script>
+</body>
+</html>
